@@ -20756,14 +20756,39 @@ var RecipeList = React.createClass({
             recipes: recipes
         });
     },
+    writeRecipe: function () {
+        console.log('you clicked a button!');
+    },
     render: function () {
         var RecipeItem = this.state.recipes.map(function (item) {
-            return React.createElement(Recipe, { key: item.key, name: item.name, ingredients: item.ingredients, instructions: item.instructions });
+            console.log(item.key);
+            return React.createElement(Recipe, { myKey: item.key, name: item.name, ingredients: item.ingredients, instructions: item.instructions });
+        });
+        var RecipeNames = this.state.recipes.map(function (item) {
+            var recipeLink = "#" + item.key;
+            return React.createElement(
+                'a',
+                { href: recipeLink, 'data-toggle': 'collapse', 'data-parent': '#accordion' },
+                item.name
+            );
         });
         return React.createElement(
             'div',
             null,
-            RecipeItem
+            React.createElement(
+                'div',
+                { id: 'accordion', className: 'panel-group' },
+                React.createElement(
+                    'div',
+                    { className: 'panel panel-default' },
+                    RecipeItem
+                )
+            ),
+            React.createElement(
+                'button',
+                { className: 'btn btn-default', onClick: this.writeRecipe },
+                React.createElement('span', { className: 'glyphicon glyphicon-plus' })
+            )
         );
     }
 
@@ -20775,40 +20800,63 @@ module.exports = RecipeList;
 var React = require('react');
 
 var Recipe = React.createClass({
-	displayName: 'Recipe',
+	displayName: "Recipe",
 
 	render: function () {
 		var ingredients = this.props.ingredients.map(function (item) {
 			return React.createElement(
-				'li',
+				"li",
 				null,
 				item
 			);
 		});
 		var instructions = this.props.instructions.map(function (item) {
 			return React.createElement(
-				'li',
+				"li",
 				null,
 				item
 			);
 		});
+		var linkid = "#" + this.props.myKey;
+
 		return React.createElement(
-			'div',
+			"div",
 			null,
 			React.createElement(
-				'h2',
-				null,
-				this.props.name
-			),
-			React.createElement(
-				'ul',
-				null,
-				ingredients
-			),
-			React.createElement(
-				'ol',
-				null,
-				instructions
+				"div",
+				{ className: "panel-heading" },
+				React.createElement(
+					"a",
+					{ "data-toggle": "collapse", "data-parent": "#accordion", href: linkid },
+					React.createElement(
+						"h4",
+						null,
+						this.props.name
+					)
+				),
+				React.createElement(
+					"div",
+					{ className: "collapse panel-collapse", id: this.props.myKey },
+					React.createElement(
+						"div",
+						{ className: "panel-body" },
+						React.createElement(
+							"h2",
+							null,
+							this.props.name
+						),
+						React.createElement(
+							"ul",
+							null,
+							ingredients
+						),
+						React.createElement(
+							"ol",
+							null,
+							instructions
+						)
+					)
+				)
 			)
 		);
 	}
@@ -20843,7 +20891,16 @@ var RecipeStore = Reflux.createStore({
 			this.fireUpdate();
 		}).bind(this));
 	},
-	postRecipe: function () {},
+	postRecipe: function (name, ingredients, instructions) {
+		var recipe = {
+			"name": name,
+			"ingredients": ingredients,
+			"instructions": instructions,
+			"key": Math.floor(Date.now() / 1000) + name
+		};
+		this.recipes.push(recipe);
+		this.fireUpdate();
+	},
 	fireUpdate: function () {
 		this.trigger('change', this.recipes);
 	}
@@ -20859,6 +20916,18 @@ var service = {
     get: function (url) {
         return fetch(baseUrl + url).then(function (response) {
             return response.json();
+        });
+    },
+    post: function (url, recipe) {
+        return fetch(baseUrl + url, {
+            headers: {
+                'Accept': 'text/plain',
+                'Content-Type': 'application/json'
+            },
+            method: 'post',
+            body: JSON.stringify(recipe)
+        }).then(function (response) {
+            return response;
         });
     }
 };

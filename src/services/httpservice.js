@@ -7,6 +7,18 @@ var service = {
         .then(function(response) {
             return response.json();
         });
+    },
+    post: function(url, recipe){
+    	return fetch(baseUrl + url, {
+    		headers:{
+    			'Accept':'text/plain',
+    			'Content-Type':'application/json'
+    		},
+    		method: 'post',
+    		body:JSON.stringify(recipe)
+    		}).then(function(response){
+    		return response;
+    		})
     }
 };
 

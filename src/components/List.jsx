@@ -23,18 +23,34 @@ var RecipeList = React.createClass({
     onChange: function(event, recipes){
         this.setState({
             recipes:recipes
-        })
+        });
+    },
+    writeRecipe: function(){
+        console.log('you clicked a button!')
     },
     render: function(){
         var RecipeItem = this.state.recipes.map(function(item){
-            return <Recipe key={item.key} name={item.name} ingredients={item.ingredients} instructions={item.instructions} />
+            console.log(item.key)
+            return <Recipe myKey={item.key} name={item.name} ingredients={item.ingredients} instructions={item.instructions} />
+        })
+        var RecipeNames = this.state.recipes.map(function(item){
+            var recipeLink = "#"+item.key
+            return <a href={recipeLink} data-toggle="collapse" data-parent="#accordion">{item.name}</a>
         })
         return(
-        <div>{RecipeItem}</div>
+            <div>
+        <div id="accordion" className="panel-group">
+            <div className="panel panel-default">
+                
+                {RecipeItem}
+                        
+</div></div>
+        <button className="btn btn-default" onClick={this.writeRecipe}><span className="glyphicon glyphicon-plus"></span></button>
+</div>
+        
         )
     }
 
 })
-
 
 module.exports = RecipeList;
