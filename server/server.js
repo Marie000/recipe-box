@@ -42,7 +42,7 @@ app.get('/recipes', function(req, res) {
 
 app.post('/recipes', function(req, res) {
     var newRecipe = req.body;
-    console.log(req.body);
+    console.log("recipe sent");
     recipes.push(newRecipe);
     res.status(200).send("Successfully posted new recipe");
 });

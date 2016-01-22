@@ -11,19 +11,16 @@ var RecipeStore = Reflux.createStore({
 			this.fireUpdate();
 		}.bind(this));
 	},
-	postRecipe: function(name,ingredients,instructions){
-		var recipe = {
-			"name":name,
-			"ingredients":ingredients,
-			"instructions":instructions,
-			"key":Math.floor(Date.now()/1000)+name
-		};
+	postRecipe: function(recipe){
 		this.recipes.push(recipe);
 		this.fireUpdate();
+		/*HTTP.post('/recipes',recipe).then(function(response){
+			this.getRecipe();
+		}.bind(this)) */
 	},
 	fireUpdate: function(){
 		this.trigger('change', this.recipes)
 	}
-})
+});
 
 module.exports=RecipeStore;

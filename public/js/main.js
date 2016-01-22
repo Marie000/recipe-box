@@ -20733,6 +20733,8 @@ var Recipe = require('./Recipe.jsx');
 var Reflux = require('reflux');
 var Actions = require('../reflux/actions.jsx');
 var RecipeStore = require('../reflux/recipe-store.jsx');
+var InputForm = require('./form.jsx');
+var ReactDOM = require('react-dom');
 
 var RecipeList = React.createClass({
     displayName: 'RecipeList',
@@ -20745,7 +20747,10 @@ var RecipeList = React.createClass({
                 name: "First recipe",
                 ingredients: ["1", "2"],
                 instructions: ["a", "b"]
-            }]
+            }],
+            recipeName: "",
+            ingredientInput: [],
+            instructionInput: []
         };
     },
     componentWillMount: function () {
@@ -20756,12 +20761,37 @@ var RecipeList = React.createClass({
             recipes: recipes
         });
     },
-    writeRecipe: function () {
-        console.log('you clicked a button!');
+    nameChange: function (e) {
+        this.setState({
+            recipeName: e.target.value
+        });
+    },
+    changeIngredients: function (e) {
+        this.setState({
+            ingredientInput: e.target.value
+        });
+    },
+    changeInstructions: function (e) {
+        this.setState({
+            instructionInput: e.target.value
+        });
+    },
+    onSubmit: function (e) {
+        if (this.state.recipeName) {
+            var newIngredients = this.state.ingredientInput.split(',');
+            var newInstructions = this.state.instructionInput.split(',');
+            var newRecipe = {
+                key: Math.floor(Date.now() / 1000),
+                name: this.state.recipeName,
+                ingredients: newIngredients,
+                instructions: newInstructions
+            };
+            Actions.postRecipe(newRecipe);
+        };
+        this.setState({ recipeName: '', ingredientInput: [], instructionInput: [] });
     },
     render: function () {
         var RecipeItem = this.state.recipes.map(function (item) {
-            console.log(item.key);
             return React.createElement(Recipe, { myKey: item.key, name: item.name, ingredients: item.ingredients, instructions: item.instructions });
         });
         var RecipeNames = this.state.recipes.map(function (item) {
@@ -20774,20 +20804,55 @@ var RecipeList = React.createClass({
         });
         return React.createElement(
             'div',
-            null,
+            { className: 'container' },
             React.createElement(
                 'div',
                 { id: 'accordion', className: 'panel-group' },
                 React.createElement(
                     'div',
                     { className: 'panel panel-default' },
-                    RecipeItem
+                    RecipeItem,
+                    React.createElement(
+                        'div',
+                        { className: 'panel-heading' },
+                        React.createElement(
+                            'a',
+                            { 'data-toggle': 'collapse', 'data-parent': '#accordion', href: '#form' },
+                            React.createElement(
+                                'h4',
+                                null,
+                                'Add a recipe'
+                            )
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'collapse panel-collapse', id: 'form' },
+                            React.createElement(
+                                'div',
+                                { className: 'panel-body' },
+                                React.createElement(
+                                    'div',
+                                    { className: 'form-group container' },
+                                    React.createElement(
+                                        'form',
+                                        { role: 'form' },
+                                        React.createElement('input', { placeholder: 'recipe name', value: this.state.recipeName, onChange: this.nameChange, className: 'form-control' }),
+                                        React.createElement('br', null),
+                                        React.createElement('input', { className: 'form-control', placeholder: 'ingredients (comma separated)', value: this.state.ingredientInput, onChange: this.changeIngredients }),
+                                        React.createElement('br', null),
+                                        React.createElement('input', { className: 'form-control', placeholder: 'instructions (comma separated)', value: this.state.instructionInput, onChange: this.changeInstructions }),
+                                        React.createElement('br', null),
+                                        React.createElement(
+                                            'button',
+                                            { className: 'btn btn-default', type: 'button', onClick: this.onSubmit },
+                                            React.createElement('span', { className: 'glyphicon glyphicon-ok' })
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
                 )
-            ),
-            React.createElement(
-                'button',
-                { className: 'btn btn-default', onClick: this.writeRecipe },
-                React.createElement('span', { className: 'glyphicon glyphicon-plus' })
             )
         );
     }
@@ -20796,7 +20861,7 @@ var RecipeList = React.createClass({
 
 module.exports = RecipeList;
 
-},{"../reflux/actions.jsx":182,"../reflux/recipe-store.jsx":183,"./Recipe.jsx":180,"react":159,"reflux":175}],180:[function(require,module,exports){
+},{"../reflux/actions.jsx":183,"../reflux/recipe-store.jsx":184,"./Recipe.jsx":180,"./form.jsx":181,"react":159,"react-dom":30,"reflux":175}],180:[function(require,module,exports){
 var React = require('react');
 
 var Recipe = React.createClass({
@@ -20866,19 +20931,90 @@ module.exports = Recipe;
 
 },{"react":159}],181:[function(require,module,exports){
 var React = require('react');
+var Reflux = require('reflux');
+var Actions = require('../reflux/actions.jsx');
+var RecipeStore = require('../reflux/recipe-store.jsx');
+
+var Form = React.createClass({
+	displayName: 'Form',
+
+	mixins: [Reflux.listenTo(RecipeStore, 'onChange')],
+	getInitialState: function () {
+		return {
+			recipeName: "",
+			ingredientInput: [],
+			instructionInput: []
+		};
+	},
+	nameChange: function (e) {
+		this.setState({
+			recipeName: e.target.value
+		});
+	},
+	changeIngredients: function (e) {
+		this.setState({
+			ingredientInput: e.target.value
+		});
+	},
+	changeInstructions: function (e) {
+		this.setState({
+			instructionInput: e.target.value
+		});
+	},
+	onSubmit: function (e) {
+		if (this.state.recipeName) {
+			var newIngredients = this.state.ingredientInput.split(',');
+			var newInstructions = this.state.instructionInput.split(',');
+			var newRecipe = {
+				key: Math.floor(Date.now() / 1000) + recipeName,
+				name: this.state.recipeName,
+				ingredients: newIngredients,
+				instructions: newInstructions
+			};
+			Actions.postRecipe(newRecipe);
+		};
+		this.setState({ recipeName: '', ingredientInput: [], instructionInput: [] });
+	},
+	render: function () {
+		return React.createElement(
+			'div',
+			{ className: 'form-group container' },
+			React.createElement(
+				'form',
+				{ role: 'form' },
+				React.createElement('input', { placeholder: 'recipe name', value: this.state.recipeName, onChange: this.nameChange, className: 'form-control' }),
+				React.createElement('br', null),
+				React.createElement('input', { className: 'form-control', placeholder: 'ingredients (comma separated)', value: this.state.ingredientInput, onChange: this.changeIngredients }),
+				React.createElement('br', null),
+				React.createElement('input', { className: 'form-control', placeholder: 'instructions (comma separated)', value: this.state.instructionInput, onChange: this.changeInstructions }),
+				React.createElement('br', null),
+				React.createElement(
+					'button',
+					{ className: 'btn btn-default', onClick: this.onSubmit },
+					React.createElement('span', { className: 'glyphicon glyphicon-ok' })
+				)
+			)
+		);
+	}
+});
+
+module.exports = Form;
+
+},{"../reflux/actions.jsx":183,"../reflux/recipe-store.jsx":184,"react":159,"reflux":175}],182:[function(require,module,exports){
+var React = require('react');
 var ReactDOM = require('react-dom');
 var List = require('./components/List.jsx');
 
 ReactDOM.render(React.createElement(List, null), document.getElementById('recipes'));
 
-},{"./components/List.jsx":179,"react":159,"react-dom":30}],182:[function(require,module,exports){
+},{"./components/List.jsx":179,"react":159,"react-dom":30}],183:[function(require,module,exports){
 var Reflux = require('reflux');
 
 var Actions = Reflux.createActions(['getRecipe', 'postRecipe']);
 
 module.exports = Actions;
 
-},{"reflux":175}],183:[function(require,module,exports){
+},{"reflux":175}],184:[function(require,module,exports){
 var HTTP = require('../services/httpservice.js');
 var Reflux = require('reflux');
 var Actions = require('./actions.jsx');
@@ -20891,15 +21027,12 @@ var RecipeStore = Reflux.createStore({
 			this.fireUpdate();
 		}).bind(this));
 	},
-	postRecipe: function (name, ingredients, instructions) {
-		var recipe = {
-			"name": name,
-			"ingredients": ingredients,
-			"instructions": instructions,
-			"key": Math.floor(Date.now() / 1000) + name
-		};
+	postRecipe: function (recipe) {
 		this.recipes.push(recipe);
 		this.fireUpdate();
+		/*HTTP.post('/recipes',recipe).then(function(response){
+  	this.getRecipe();
+  }.bind(this)) */
 	},
 	fireUpdate: function () {
 		this.trigger('change', this.recipes);
@@ -20908,7 +21041,7 @@ var RecipeStore = Reflux.createStore({
 
 module.exports = RecipeStore;
 
-},{"../services/httpservice.js":184,"./actions.jsx":182,"reflux":175}],184:[function(require,module,exports){
+},{"../services/httpservice.js":185,"./actions.jsx":183,"reflux":175}],185:[function(require,module,exports){
 var Fetch = require('whatwg-fetch');
 var baseUrl = 'http://localhost:6069';
 
@@ -20921,11 +21054,10 @@ var service = {
     post: function (url, recipe) {
         return fetch(baseUrl + url, {
             headers: {
-                'Accept': 'text/plain',
                 'Content-Type': 'application/json'
             },
             method: 'post',
-            body: JSON.stringify(recipe)
+            body: recipe
         }).then(function (response) {
             return response;
         });
@@ -20934,4 +21066,4 @@ var service = {
 
 module.exports = service;
 
-},{"whatwg-fetch":178}]},{},[181]);
+},{"whatwg-fetch":178}]},{},[182]);
