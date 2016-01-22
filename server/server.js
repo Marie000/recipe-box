@@ -42,6 +42,7 @@ app.get('/recipes', function(req, res) {
 
 app.post('/recipes', function(req, res) {
     var newRecipe = req.body;
+    newRecipe.key=Math.floor(Date.now()/1000)
     console.log("recipe sent");
     recipes.push(newRecipe);
     res.status(200).send("Successfully posted new recipe");

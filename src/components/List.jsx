@@ -51,7 +51,6 @@ var RecipeList = React.createClass({
             var newIngredients=this.state.ingredientInput.split(',');
             var newInstructions=this.state.instructionInput.split(',');
             var newRecipe={
-                key: Math.floor(Date.now()/1000),
                 name:this.state.recipeName,
                 ingredients:newIngredients,
                 instructions:newInstructions

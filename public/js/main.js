@@ -20781,7 +20781,6 @@ var RecipeList = React.createClass({
             var newIngredients = this.state.ingredientInput.split(',');
             var newInstructions = this.state.instructionInput.split(',');
             var newRecipe = {
-                key: Math.floor(Date.now() / 1000),
                 name: this.state.recipeName,
                 ingredients: newIngredients,
                 instructions: newInstructions
@@ -21030,9 +21029,9 @@ var RecipeStore = Reflux.createStore({
 	postRecipe: function (recipe) {
 		this.recipes.push(recipe);
 		this.fireUpdate();
-		/*HTTP.post('/recipes',recipe).then(function(response){
-  	this.getRecipe();
-  }.bind(this)) */
+		HTTP.post('/recipes', recipe).then((function (response) {
+			this.getRecipe();
+		}).bind(this));
 	},
 	fireUpdate: function () {
 		this.trigger('change', this.recipes);
@@ -21054,10 +21053,11 @@ var service = {
     post: function (url, recipe) {
         return fetch(baseUrl + url, {
             headers: {
+                'accept': 'text/plain',
                 'Content-Type': 'application/json'
             },
             method: 'post',
-            body: recipe
+            body: JSON.stringify(recipe)
         }).then(function (response) {
             return response;
         });

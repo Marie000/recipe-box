@@ -11,12 +11,13 @@ var service = {
     post: function(url, recipe){
     	return fetch(baseUrl + url, {
     		headers:{
+                'accept':'text/plain',
     			'Content-Type':'application/json'
     		},
     		method: 'post',
-    		body:recipe
+    		body:JSON.stringify(recipe)
     		}).then(function(response){
-            return(response)    
+            return response    
     		})
     }
 };

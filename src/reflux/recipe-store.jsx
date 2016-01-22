@@ -14,9 +14,9 @@ var RecipeStore = Reflux.createStore({
 	postRecipe: function(recipe){
 		this.recipes.push(recipe);
 		this.fireUpdate();
-		/*HTTP.post('/recipes',recipe).then(function(response){
+		HTTP.post('/recipes',recipe).then(function(response){
 			this.getRecipe();
-		}.bind(this)) */
+		}.bind(this)) 
 	},
 	fireUpdate: function(){
 		this.trigger('change', this.recipes)
