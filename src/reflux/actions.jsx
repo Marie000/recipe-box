@@ -1,7 +1,7 @@
 var Reflux = require ('reflux');
 
 var Actions = Reflux.createActions([
-	'getRecipe','postRecipe'
+	'getRecipe','postRecipe','deleteRecipe'
 	]);
 
 module.exports = Actions;

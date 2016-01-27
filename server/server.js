@@ -6,7 +6,7 @@ var app = express();
 app.all('/*', function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "X-Requested-With, Content-Type, Accept");
-  res.header("Access-Control-Allow-Methods", "POST, GET");
+  res.header("Access-Control-Allow-Methods", "POST, GET, DELETE");
   next();
 });
 
@@ -42,10 +42,20 @@ app.get('/recipes', function(req, res) {
 
 app.post('/recipes', function(req, res) {
     var newRecipe = req.body;
-    newRecipe.key=Math.floor(Date.now()/1000)
+    newRecipe.key=Math.floor(Date.now()/1000);
     console.log("recipe sent");
     recipes.push(newRecipe);
     res.status(200).send("Successfully posted new recipe");
+});
+app.delete('/recipes',function(req,res){
+    var rejectedRecipe = req.body;
+    for (var i =0; i < recipes.length; i++){
+    if (recipes[i].name === rejectedRecipe) {
+      recipes.splice(i,1);
+      break;
+   }
+}
+    res.status(200).send("Successfully deleted recipe");
 });
 
 app.listen(6069);

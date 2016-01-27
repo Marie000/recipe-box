@@ -5,7 +5,6 @@ var RecipeStore = require ('../reflux/recipe-store.jsx');
 
 
 var Form = React.createClass({
-	mixins:[Reflux.listenTo(RecipeStore, 'onChange')],
 	getInitialState: function(){
 		return {
 			recipeName:"",
@@ -32,8 +31,9 @@ var Form = React.createClass({
 		if(this.state.recipeName){
 			var newIngredients=this.state.ingredientInput.split(',');
 			var newInstructions=this.state.instructionInput.split(',');
+			var newKey = Math.floor(Date.now()/1000)
 			var newRecipe={
-				key: Math.floor(Date.now()/1000)+recipeName,
+				key:newKey,
 				name:this.state.recipeName,
 				ingredients:newIngredients,
 				instructions:newInstructions
@@ -44,17 +44,29 @@ var Form = React.createClass({
 	},
 	render: function(){
 		return(
+
+
+			<div className="panel-heading">
+			<a data-toggle="collapse" data-parent="#accordion" href='#form'><h4>Add a recipe</h4></a>
+			<div className="collapse panel-collapse" id='form'>
+			<div className="panel-body">
 			<div className="form-group container">
 			<form role="form">
-			<input placeholder="recipe name" value={this.state.recipeName} onChange={this.nameChange} className="form-control" />
-			<br/>
-			<input className="form-control" placeholder="ingredients (comma separated)" value={this.state.ingredientInput} onChange={this.changeIngredients} />
-			<br/>
-			<input className="form-control" placeholder="instructions (comma separated)" value={this.state.instructionInput} onChange={this.changeInstructions} />
-			<br/>
-			<button className="btn btn-default" onClick={this.onSubmit}><span className="glyphicon glyphicon-ok"></span></button>
-			</form>
+            <input placeholder="recipe name" value={this.state.recipeName} onChange={this.nameChange} className="form-control" />
+            <br/>
+            <input className="form-control" placeholder="ingredients (comma separated)" value={this.state.ingredientInput} onChange={this.changeIngredients} />
+            <br/>
+            <input className="form-control" placeholder="instructions (comma separated)" value={this.state.instructionInput} onChange={this.changeInstructions} />
+            <br/>
+            <button className="btn btn-default" type="button" onClick={this.onSubmit}><span className="glyphicon glyphicon-ok"></span></button>
+            </form>
+            </div>
+            
+
 			</div>
+			</div>
+			</div>
+
 			)
 	}
 })

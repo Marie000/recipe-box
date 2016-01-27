@@ -17,8 +17,20 @@ var service = {
     		method: 'post',
     		body:JSON.stringify(recipe)
     		}).then(function(response){
-            return response    
+            return response;    
     		})
+    },
+    delete: function(url, recipe){
+        return fetch(baseUrl + url,{
+            headers:{
+                'accept':'text/plain',
+                'Content-Type':'application/json'
+            },
+            method: 'delete',
+            body:JSON.stringify(recipe)
+        }).then(function(response){
+            return response
+        })
     }
 };
 
