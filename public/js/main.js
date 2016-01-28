@@ -20751,28 +20751,27 @@ var RecipeList = React.createClass({
 
     componentWillMount: function () {
         console.log("mounted with: " + JSON.stringify(this.state.recipes));
-
-        for (x = 0; x < this.state.recipes.length; x++) {
-            localStorage.setItem('recipes' + x, JSON.stringify(this.state.recipes[x]));
+        if (localStorage.getItem('recipes') == null) {
+            localStorage.setItem('recipes', JSON.stringify(this.state.recipes));
         }
-
-        //console.log("after mounting, local storage contains:"+ localStorage.getItem('recipes'));
-
+        /*
+        for(x=0;x<this.state.recipes.length;x++){
+            localStorage.setItem('recipes'+x,JSON.stringify(this.state.recipes[x]));
+        } */
+        console.log("after mounting, local storage contains:" + localStorage.getItem('recipes'));
         Actions.getRecipe();
     },
 
-    onChange: function (event, recipes) {
+    onChange: function (event, newRecipes) {
         this.setState({
-            recipes: recipes
+            recipes: newRecipes
         });
-        for (x = 0; x < this.state.recipes.length; x++) {
-            localStorage.setItem('recipes' + x, JSON.stringify(this.state.recipes[x]));
-        }
+        console.log('after coming back, this.state.recipes is now: ' + this.state.recipes);
     },
 
     render: function () {
-        console.log('render: ' + this.state.recipes[0].key);
         var RecipeItem = this.state.recipes.map(function (item) {
+            console.log(item.key);
             return React.createElement(Recipe, { myKey: item.key, name: item.name, ingredients: item.ingredients, instructions: item.instructions });
         });
         return React.createElement(
@@ -20788,7 +20787,7 @@ var RecipeList = React.createClass({
                         'div',
                         { className: 'panel panel-default' },
                         RecipeItem,
-                        React.createElement(InputForm, null)
+                        React.createElement(InputForm, { editing: false })
                     )
                 )
             )
@@ -20804,84 +20803,104 @@ var React = require('react');
 var Reflux = require('reflux');
 var Actions = require('../reflux/actions.jsx');
 var RecipeStore = require('../reflux/recipe-store.jsx');
+var Form = require('./form.jsx');
 
 var Recipe = React.createClass({
 	displayName: 'Recipe',
 
+	mixins: [Reflux.listenTo(RecipeStore, 'onChange')],
 	getInitialState: function () {
-		return { visible: true };
+		return { editing: false };
+	},
+	onChange: function () {
+		if (this.state.editing) {
+			this.setState({ editing: false });
+		}
 	},
 	onDelete: function (recipe) {
 		//this.setState({visible:false});
 		Actions.deleteRecipe(this.props.myKey);
 	},
+	onEdit: function () {
+		this.setState({ editing: true });
+	},
 	render: function () {
-		var ingredients = this.props.ingredients.map(function (item) {
+		if (!this.state.editing) {
+			var ingredients = this.props.ingredients.map(function (item) {
+				return React.createElement(
+					'li',
+					{ key: Math.floor(Date.now() / 1000) + item },
+					item
+				);
+			});
+			var instructions = this.props.instructions.map(function (item) {
+				return React.createElement(
+					'li',
+					{ key: Math.floor(Date.now() / 1000) + item },
+					item
+				);
+			});
+			var linkid = "#" + this.props.myKey;
 			return React.createElement(
-				'li',
-				{ key: Math.floor(Date.now() / 1000) + item },
-				item
-			);
-		});
-		var instructions = this.props.instructions.map(function (item) {
-			return React.createElement(
-				'li',
-				{ key: Math.floor(Date.now() / 1000) + item },
-				item
-			);
-		});
-		var linkid = "#" + this.props.myKey;
-		return React.createElement(
-			'div',
-			null,
-			React.createElement(
 				'div',
-				{ className: 'panel-heading' },
-				React.createElement(
-					'a',
-					{ 'data-toggle': 'collapse', 'data-parent': '#accordion', href: linkid },
-					React.createElement(
-						'h4',
-						null,
-						this.props.name
-					)
-				),
+				null,
 				React.createElement(
 					'div',
-					{ className: 'collapse panel-collapse', id: this.props.myKey },
+					{ className: 'panel-heading' },
 					React.createElement(
-						'div',
-						{ className: 'panel-body' },
+						'a',
+						{ 'data-toggle': 'collapse', 'data-parent': '#accordion', href: linkid },
 						React.createElement(
-							'h2',
+							'h4',
 							null,
 							this.props.name
-						),
+						)
+					),
+					React.createElement(
+						'div',
+						{ className: 'collapse panel-collapse', id: this.props.myKey },
 						React.createElement(
-							'ul',
-							null,
-							ingredients
-						),
-						React.createElement(
-							'ol',
-							null,
-							instructions
-						),
-						React.createElement(
-							'button',
-							{ className: 'btn btn-default', onClick: this.onDelete },
-							React.createElement('span', { className: 'glyphicon glyphicon-trash' })
+							'div',
+							{ className: 'panel-body' },
+							React.createElement(
+								'h2',
+								null,
+								this.props.name
+							),
+							React.createElement(
+								'ul',
+								null,
+								ingredients
+							),
+							React.createElement(
+								'ol',
+								null,
+								instructions
+							),
+							React.createElement(
+								'button',
+								{ className: 'btn btn-default', onClick: this.onDelete },
+								React.createElement('span', { className: 'glyphicon glyphicon-trash' })
+							),
+							React.createElement(
+								'button',
+								{ className: 'btn btn-default', onClick: this.onEdit },
+								React.createElement('span', { className: 'glyphicon glyphicon-pencil' })
+							)
 						)
 					)
 				)
-			)
-		);
+			);
+		} else {
+			return React.createElement(Form, { name: this.props.name, oldKey: this.props.myKey, ingredients: this.props.ingredients, instructions: this.props.instructions, editing: true });
+		}
 	}
+
 });
 
 module.exports = Recipe;
 
-},{"../reflux/actions.jsx":183,"../reflux/recipe-store.jsx":184,"react":159,"reflux":175}],181:[function(require,module,exports){
+},{"../reflux/actions.jsx":183,"../reflux/recipe-store.jsx":184,"./form.jsx":181,"react":159,"reflux":175}],181:[function(require,module,exports){
 var React = require('react');
 var Reflux = require('reflux');
 var Actions = require('../reflux/actions.jsx');
@@ -20891,11 +20910,19 @@ var Form = React.createClass({
 	displayName: 'Form',
 
 	getInitialState: function () {
-		return {
-			recipeName: "",
-			ingredientInput: [],
-			instructionInput: []
-		};
+		if (this.props.editing) {
+			return {
+				recipeName: this.props.name,
+				ingredientInput: this.props.ingredients,
+				instructionInput: this.props.instructions
+			};
+		} else {
+			return {
+				recipeName: "",
+				ingredientInput: [],
+				instructionInput: []
+			};
+		}
 	},
 	nameChange: function (e) {
 		this.setState({
@@ -20913,9 +20940,18 @@ var Form = React.createClass({
 		});
 	},
 	onSubmit: function (e) {
+		console.log(this.state.ingredientInput);
 		if (this.state.recipeName) {
-			var newIngredients = this.state.ingredientInput.split(',');
-			var newInstructions = this.state.instructionInput.split(',');
+			if (typeof this.state.ingredientInput == "string") {
+				var newIngredients = this.state.ingredientInput.split(',');
+			} else {
+				var newIngredients = this.state.ingredientInput;
+			}
+			if (typeof this.state.instructionInput == "string") {
+				var newInstructions = this.state.instructionInput.split(',');
+			} else {
+				var newInstructions = this.state.instructionInput;
+			}
 			var newKey = Math.floor(Date.now() / 1000);
 			var newRecipe = {
 				key: newKey,
@@ -20923,11 +20959,58 @@ var Form = React.createClass({
 				ingredients: newIngredients,
 				instructions: newInstructions
 			};
-			Actions.postRecipe(newRecipe);
+			if (!this.props.editing) {
+				this.state.count++;
+				Actions.postRecipe(newRecipe);
+			} else {
+				Actions.updateRecipe(newRecipe, this.props.oldKey);
+			}
 		};
 		this.setState({ recipeName: '', ingredientInput: [], instructionInput: [] });
 	},
 	render: function () {
+		if (this.props.editing) {
+			return React.createElement(
+				'div',
+				{ className: 'panel-heading' },
+				React.createElement(
+					'a',
+					{ 'data-toggle': 'collapse', 'data-parent': '#accordion', href: '#form' },
+					React.createElement(
+						'h4',
+						null,
+						this.props.name
+					)
+				),
+				React.createElement(
+					'div',
+					{ className: 'collapse panel-collapse in', id: 'form' },
+					React.createElement(
+						'div',
+						{ className: 'panel-body' },
+						React.createElement(
+							'div',
+							{ className: 'form-group container' },
+							React.createElement(
+								'form',
+								{ role: 'form' },
+								React.createElement('input', { placeholder: this.props.name, value: this.state.recipeName, onChange: this.nameChange, className: 'form-control' }),
+								React.createElement('br', null),
+								React.createElement('input', { className: 'form-control', placeholder: this.props.ingredients.toString(), value: this.state.ingredientInput, onChange: this.changeIngredients }),
+								React.createElement('br', null),
+								React.createElement('input', { className: 'form-control', placeholder: 'instructions (comma separated)', value: this.state.instructionInput, onChange: this.changeInstructions }),
+								React.createElement('br', null),
+								React.createElement(
+									'button',
+									{ className: 'btn btn-default', type: 'button', onClick: this.onSubmit },
+									React.createElement('span', { className: 'glyphicon glyphicon-ok' })
+								)
+							)
+						)
+					)
+				)
+			);
+		}
 		return React.createElement(
 			'div',
 			{ className: 'panel-heading' },
@@ -20983,7 +21066,7 @@ ReactDOM.render(React.createElement(List, null), document.getElementById('recipe
 },{"./components/List.jsx":179,"react":159,"react-dom":30}],183:[function(require,module,exports){
 var Reflux = require('reflux');
 
-var Actions = Reflux.createActions(['getRecipe', 'postRecipe', 'deleteRecipe']);
+var Actions = Reflux.createActions(['getRecipe', 'postRecipe', 'deleteRecipe', 'updateRecipe']);
 
 module.exports = Actions;
 
@@ -20994,13 +21077,13 @@ var Actions = require('./actions.jsx');
 
 var RecipeStore = Reflux.createStore({
 	listenables: [Actions],
-
 	getRecipe: function () {
-		console.log("the getRecipe function should get this from local storage: " + localStorage.getItem('recipes' + 0));
-		/*var array=[];
-  for(var x=0;x<1;x++){
+		console.log("the getRecipe function should get this from local storage: " + localStorage.getItem('recipes'));
+		/*
+  var array=[];
+  for(var x=0;x<2;x++){
   	var newItem = JSON.parse(localStorage.getItem('recipes'+x));
-  	array.push(newItem)
+  	array.push(newItem);
   }
   this.recipes=array;
   */
@@ -21015,9 +21098,15 @@ var RecipeStore = Reflux.createStore({
   }.bind(this));*/
 	},
 	postRecipe: function (recipe) {
+		console.log('before posting, this.recipes= ' + this.recipes);
 		this.recipes.push(recipe);
+		console.log('after pushing new recipes, this.recipes= ' + this.recipes);
+		localStorage.setItem('recipes', JSON.stringify(this.recipes));
+		console.log('then new this.recipes is sent to local storage: ' + JSON.stringify(this.recipes));
 		this.fireUpdate();
-		localStorage.setItem("recipes", JSON.stringify(this.recipes));
+		/*for (var x=0;x<this.recipes.length;x++){
+  localStorage.setItem("recipes"+x,JSON.stringify(this.recipes[x]));
+  }*/
 		this.getRecipe();
 		/*
   HTTP.post('/recipes',recipe).then(function(response){
@@ -21039,6 +21128,17 @@ var RecipeStore = Reflux.createStore({
    			this.getRecipe();
    		}).bind(this)*/
 		}
+	},
+	updateRecipe: function (recipe, oldKey) {
+		var array = JSON.parse(localStorage.getItem("recipes"));
+		for (var i = 0; i < array.length; i++) {
+			if (array[i].key === oldKey) {
+				console.log('found');
+				array.splice(i, 1, recipe);
+			}
+		}
+		localStorage.setItem("recipes", JSON.stringify(array));
+		this.getRecipe();
 	},
 	fireUpdate: function () {
 		console.log('fireUpdate has been fired');

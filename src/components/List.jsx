@@ -15,34 +15,34 @@ var RecipeList = React.createClass({
                 name:"First recipe",
                 ingredients:["1","2"],
                 instructions:["a","b"]
-            }]
+            }],
         };
     },
     
     componentWillMount: function(){
         console.log("mounted with: "+JSON.stringify(this.state.recipes));
-        
+        if(localStorage.getItem('recipes')==null){
+        localStorage.setItem('recipes',JSON.stringify(this.state.recipes));
+    }
+        /*
         for(x=0;x<this.state.recipes.length;x++){
             localStorage.setItem('recipes'+x,JSON.stringify(this.state.recipes[x]));
-        }        
-
-        //console.log("after mounting, local storage contains:"+ localStorage.getItem('recipes'));
-
+        } */       
+        console.log("after mounting, local storage contains:"+ localStorage.getItem('recipes'));
         Actions.getRecipe();
     },
     
-    onChange: function(event, recipes){
+    onChange: function(event, newRecipes){
         this.setState({
-            recipes:recipes
+            recipes:newRecipes
         });
-        for(x=0;x<this.state.recipes.length;x++){
-            localStorage.setItem('recipes'+x,JSON.stringify(this.state.recipes[x]));
-        }
+        console.log('after coming back, this.state.recipes is now: '+this.state.recipes)
+        
     },
 
     render:function(){
-        console.log('render: '+this.state.recipes[0].key)
         var RecipeItem = this.state.recipes.map(function(item){
+            console.log(item.key)
              return <Recipe myKey={item.key} name={item.name} ingredients={item.ingredients} instructions={item.instructions} />
          })
         return(
@@ -51,7 +51,7 @@ var RecipeList = React.createClass({
                         <div id="accordion" className="panel-group">
                             <div className="panel panel-default">              
                             {RecipeItem}
-                            <InputForm />
+                            <InputForm editing={false}/>
             </div>
             </div></div></div>
         

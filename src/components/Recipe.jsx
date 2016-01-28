@@ -2,17 +2,28 @@ var React = require('react');
 var Reflux = require ('reflux');
 var Actions = require ('../reflux/actions.jsx');
 var RecipeStore = require ('../reflux/recipe-store.jsx');
+var Form = require('./form.jsx')
 
 
 var Recipe = React.createClass({
+    mixins:[Reflux.listenTo(RecipeStore, 'onChange')],
 	getInitialState: function(){
-		return {visible:true};
+		return {editing:false};
+	},
+	onChange: function(){
+		if(this.state.editing){
+			this.setState({editing:false})
+		}
 	},
 	onDelete: function(recipe){
 		//this.setState({visible:false});
 		Actions.deleteRecipe(this.props.myKey)
     },
+    onEdit: function(){
+    	this.setState({editing:true})
+    },
 	render: function(){
+	if (!this.state.editing){
 	var ingredients = this.props.ingredients.map(function(item){
 		return <li key={Math.floor(Date.now()/1000)+item}>{item}</li>
 	});
@@ -30,6 +41,7 @@ var Recipe = React.createClass({
 			<ul>{ingredients}</ul>
 			<ol>{instructions}</ol>
             <button className="btn btn-default" onClick={this.onDelete}><span className="glyphicon glyphicon-trash"></span></button>
+            <button className="btn btn-default" onClick={this.onEdit}><span className="glyphicon glyphicon-pencil"></span></button>
 
 
 			</div>
@@ -38,6 +50,10 @@ var Recipe = React.createClass({
 			)
 
 }
+else{
+	return <Form name={this.props.name} oldKey={this.props.myKey} ingredients={this.props.ingredients} instructions={this.props.instructions} editing={true}/>
+}}
+
 })
 
 module.exports=Recipe;

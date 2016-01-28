@@ -4,13 +4,13 @@ var Actions = require ('./actions.jsx');
 
 var RecipeStore = Reflux.createStore({
 	listenables: [Actions],
-
 	getRecipe: function(){
-		console.log("the getRecipe function should get this from local storage: "+localStorage.getItem('recipes'+0));
-		/*var array=[];
-		for(var x=0;x<1;x++){
+		console.log("the getRecipe function should get this from local storage: "+localStorage.getItem('recipes'));
+		/*
+		var array=[];
+		for(var x=0;x<2;x++){
 			var newItem = JSON.parse(localStorage.getItem('recipes'+x));
-			array.push(newItem)
+			array.push(newItem);
 		}
 		this.recipes=array;
 		*/
@@ -25,9 +25,15 @@ var RecipeStore = Reflux.createStore({
 		}.bind(this));*/
 	},
 	postRecipe: function(recipe){
+		console.log('before posting, this.recipes= '+this.recipes)
 		this.recipes.push(recipe);
+		console.log('after pushing new recipes, this.recipes= '+this.recipes)
+		localStorage.setItem('recipes',JSON.stringify(this.recipes))
+		console.log('then new this.recipes is sent to local storage: '+JSON.stringify(this.recipes))
 		this.fireUpdate();
-		localStorage.setItem("recipes",JSON.stringify(this.recipes));
+		/*for (var x=0;x<this.recipes.length;x++){
+		localStorage.setItem("recipes"+x,JSON.stringify(this.recipes[x]));
+		}*/
 		this.getRecipe();
 		/*
 		HTTP.post('/recipes',recipe).then(function(response){
@@ -50,6 +56,17 @@ var RecipeStore = Reflux.createStore({
 			this.getRecipe();
 		}).bind(this)*/
 	}},
+	updateRecipe:function(recipe,oldKey){
+		var array = JSON.parse(localStorage.getItem("recipes"));
+		for (var i =0; i < array.length; i++){
+    		if (array[i].key === oldKey) {
+      			console.log('found');
+      			array.splice(i,1,recipe);
+      		}
+      	}
+   		localStorage.setItem("recipes",JSON.stringify(array));
+   		this.getRecipe();	
+	},
 	fireUpdate: function(){
 		console.log('fireUpdate has been fired')
 		this.trigger('change', this.recipes);
