@@ -20,29 +20,22 @@ var RecipeList = React.createClass({
     },
     
     componentWillMount: function(){
-        console.log("mounted with: "+JSON.stringify(this.state.recipes));
+        //send recipes to local storage - only the first time you load the page
         if(localStorage.getItem('recipes')==null){
         localStorage.setItem('recipes',JSON.stringify(this.state.recipes));
-    }
-        /*
-        for(x=0;x<this.state.recipes.length;x++){
-            localStorage.setItem('recipes'+x,JSON.stringify(this.state.recipes[x]));
-        } */       
-        console.log("after mounting, local storage contains:"+ localStorage.getItem('recipes'));
+        }
+
         Actions.getRecipe();
     },
     
     onChange: function(event, newRecipes){
         this.setState({
             recipes:newRecipes
-        });
-        console.log('after coming back, this.state.recipes is now: '+this.state.recipes)
-        
+        });        
     },
 
     render:function(){
         var RecipeItem = this.state.recipes.map(function(item){
-            console.log(item.key)
              return <Recipe myKey={item.key} name={item.name} ingredients={item.ingredients} instructions={item.instructions} />
          })
         return(

@@ -4,19 +4,23 @@ var Actions = require ('../reflux/actions.jsx');
 var RecipeStore = require ('../reflux/recipe-store.jsx');
 var Form = require('./form.jsx')
 
-
+//this component will render the recipe, unless the editing button is clicked, 
+//then it will render a pre-filled version of Form
 var Recipe = React.createClass({
     mixins:[Reflux.listenTo(RecipeStore, 'onChange')],
 	getInitialState: function(){
 		return {editing:false};
 	},
+	//this function insures that the view returns to normal after editing is done
 	onChange: function(){
 		if(this.state.editing){
 			this.setState({editing:false})
 		}
 	},
 	onDelete: function(recipe){
-		//this.setState({visible:false});
+		//remove from view
+		this.setState({visible:false});
+		//update the storage and retrieve new list from storage
 		Actions.deleteRecipe(this.props.myKey)
     },
     onEdit: function(){
@@ -25,10 +29,10 @@ var Recipe = React.createClass({
 	render: function(){
 	if (!this.state.editing){
 	var ingredients = this.props.ingredients.map(function(item){
-		return <li key={Math.floor(Date.now()/1000)+item}>{item}</li>
+		return <li key={Math.floor(Math.random()*10)+item}>{item}</li>
 	});
 	var instructions = this.props.instructions.map(function(item){
-		return <li key={Math.floor(Date.now()/1000)+item}>{item}</li>
+		return <li key={Math.floor(Math.random()*10)+item}>{item}</li>
 	});
 	var linkid="#"+this.props.myKey
 		return(
