@@ -1,0 +1,59 @@
+h1 {
+  font-family: "Fredericka the Great", cursive;
+  font-size: 40px;
+  color: #ae9c96;
+  padding: 20px;
+  text-align: center; }
+
+h4 {
+  font-family: "Fredericka the Great", cursive;
+  font-size: 30px; }
+
+h5 {
+  font-size: 25px; }
+
+body {
+  background-color: #8fced6; }
+
+.main {
+  background: url("https://raw.github.com/Magnus-G/texture-mixin/gh-pages/textures/skin_side_up.png");
+  background-color: #dddad6;
+  margin: 20px;
+  font-family: "Gochi Hand", cursive;
+  font-size: 20px;
+  color: #ae9c96;
+  border-radius: 10px; }
+
+.buttons {
+  float: right; }
+
+.panel-group .panel-heading {
+  background: url("https://raw.github.com/Magnus-G/texture-mixin/gh-pages/textures/line_horizontal1.png");
+  background-color: #fbf6d0;
+  border-style: solid;
+  border-color: #dddad6; }
+
+a {
+  color: #ae9c96; }
+
+.add {
+  text-align: right; }
+
+a:visited, a:hover, a:active, a:focus {
+  color: #8fced6;
+  text-decoration: none; }
+
+.btn {
+  background-color: #8fced6; }
+
+.ingredientInput, .instructionInput {
+  width: 200px; }
+
+form {
+  display: inline-block; }
+
+.addButton {
+  display: block;
+  float: right; }
+
+/*# sourceMappingURL=output.css.map */

@@ -11,11 +11,24 @@ var RecipeList = React.createClass({
     getInitialState: function(){
         return{
             recipes:[{
-                key:"001",
-                name:"First recipe",
-                ingredients:["1","2"],
-                instructions:["a","b"]
-            }],
+        key:"101",
+        name: "Squirmy Pasta",
+        ingredients: ["live worms","pasta sauce"],
+        instructions: ["heat up pasta sauce","top live worms with pasta sauce","enjoy!"]
+    },
+    {
+        key:"102",
+        name: "BBQ squirrel",
+        ingredients: ["1 large squirrel","BBQ sauce"],
+        instructions: ["catch squirrel","cover squirrel with BBQ sauce","cook squirrel on BBQ until crunchy"]
+    },
+    {
+        key:"103",
+        name: "Compost Soup",
+        ingredients: ["rotten apple cores","moldy banana peel","water","egg shells, crushed"],
+        instructions: ["mix apple cores, banana peels and water","bring to a boil","simmer for 4-5 hours","served with crushed egg shells"]
+    }],
+    categories:['meals','drinks','deserts']
         };
     },
     

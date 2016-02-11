@@ -20741,11 +20741,22 @@ var RecipeList = React.createClass({
     getInitialState: function () {
         return {
             recipes: [{
-                key: "001",
-                name: "First recipe",
-                ingredients: ["1", "2"],
-                instructions: ["a", "b"]
-            }]
+                key: "101",
+                name: "Squirmy Pasta",
+                ingredients: ["live worms", "pasta sauce"],
+                instructions: ["heat up pasta sauce", "top live worms with pasta sauce", "enjoy!"]
+            }, {
+                key: "102",
+                name: "BBQ squirrel",
+                ingredients: ["1 large squirrel", "BBQ sauce"],
+                instructions: ["catch squirrel", "cover squirrel with BBQ sauce", "cook squirrel on BBQ until crunchy"]
+            }, {
+                key: "103",
+                name: "Compost Soup",
+                ingredients: ["rotten apple cores", "moldy banana peel", "water", "egg shells, crushed"],
+                instructions: ["mix apple cores, banana peels and water", "bring to a boil", "simmer for 4-5 hours", "served with crushed egg shells"]
+            }],
+            categories: ['meals', 'drinks', 'deserts']
         };
     },
 
@@ -20792,7 +20803,7 @@ var RecipeList = React.createClass({
 
 module.exports = RecipeList;
 
-},{"../reflux/actions.jsx":183,"../reflux/recipe-store.jsx":184,"./Recipe.jsx":180,"./form.jsx":181,"react":159,"reflux":175}],180:[function(require,module,exports){
+},{"../reflux/actions.jsx":184,"../reflux/recipe-store.jsx":185,"./Recipe.jsx":180,"./form.jsx":181,"react":159,"reflux":175}],180:[function(require,module,exports){
 var React = require('react');
 var Reflux = require('reflux');
 var Actions = require('../reflux/actions.jsx');
@@ -20845,46 +20856,59 @@ var Recipe = React.createClass({
 				null,
 				React.createElement(
 					'div',
-					{ className: 'panel-heading' },
-					React.createElement(
-						'a',
-						{ 'data-toggle': 'collapse', 'data-parent': '#accordion', href: linkid },
-						React.createElement(
-							'h4',
-							null,
-							this.props.name
-						)
-					),
+					{ className: 'title' },
 					React.createElement(
 						'div',
-						{ className: 'collapse panel-collapse', id: this.props.myKey },
+						{ className: 'panel-heading' },
 						React.createElement(
-							'div',
-							{ className: 'panel-body' },
+							'a',
+							{ 'data-toggle': 'collapse', 'data-parent': '#accordion', href: linkid },
 							React.createElement(
-								'h2',
+								'h4',
 								null,
 								this.props.name
-							),
+							)
+						),
+						React.createElement(
+							'div',
+							{ className: 'collapse panel-collapse', id: this.props.myKey },
 							React.createElement(
-								'ul',
-								null,
-								ingredients
-							),
-							React.createElement(
-								'ol',
-								null,
-								instructions
-							),
-							React.createElement(
-								'button',
-								{ className: 'btn btn-default', onClick: this.onDelete },
-								React.createElement('span', { className: 'glyphicon glyphicon-trash' })
-							),
-							React.createElement(
-								'button',
-								{ className: 'btn btn-default', onClick: this.onEdit },
-								React.createElement('span', { className: 'glyphicon glyphicon-pencil' })
+								'div',
+								{ className: 'panel-body' },
+								React.createElement(
+									'h5',
+									null,
+									'Ingredients:'
+								),
+								React.createElement(
+									'ul',
+									null,
+									ingredients
+								),
+								React.createElement(
+									'h5',
+									null,
+									'Instructions:'
+								),
+								React.createElement(
+									'ol',
+									null,
+									instructions
+								),
+								React.createElement(
+									'div',
+									{ className: 'buttons' },
+									React.createElement(
+										'button',
+										{ className: 'btn btn-default', onClick: this.onDelete },
+										React.createElement('span', { className: 'glyphicon glyphicon-trash' })
+									),
+									React.createElement(
+										'button',
+										{ className: 'btn btn-default', onClick: this.onEdit },
+										React.createElement('span', { className: 'glyphicon glyphicon-pencil' })
+									)
+								)
 							)
 						)
 					)
@@ -20899,11 +20923,12 @@ var Recipe = React.createClass({
 
 module.exports = Recipe;
 
-},{"../reflux/actions.jsx":183,"../reflux/recipe-store.jsx":184,"./form.jsx":181,"react":159,"reflux":175}],181:[function(require,module,exports){
+},{"../reflux/actions.jsx":184,"../reflux/recipe-store.jsx":185,"./form.jsx":181,"react":159,"reflux":175}],181:[function(require,module,exports){
 var React = require('react');
 var Reflux = require('reflux');
 var Actions = require('../reflux/actions.jsx');
 var RecipeStore = require('../reflux/recipe-store.jsx');
+var IngredientForm = require('./ingredient-form.jsx');
 
 var Form = React.createClass({
 	displayName: 'Form',
@@ -20912,16 +20937,30 @@ var Form = React.createClass({
 		if (this.props.editing) {
 			return {
 				recipeName: this.props.name,
-				ingredientInput: this.props.ingredients,
-				instructionInput: this.props.instructions
+				ingredients: this.props.ingredients,
+				instructions: this.props.instructions
 			};
 		} else {
 			return {
 				recipeName: "",
-				ingredientInput: [],
-				instructionInput: []
+				ingredients: [],
+				instructions: []
 			};
 		}
+	},
+	moreIngredients: function (e) {
+		var tempingredients = this.state.ingredients;
+		tempingredients.push(this.state.ingredientInput);
+		this.setState({ ingredients: tempingredients,
+			ingredientInput: []
+		});
+	},
+	moreInstructions: function (e) {
+		var tempinstructions = this.state.instructions;
+		tempinstructions.push(this.state.instructionInput);
+		this.setState({ instructions: tempinstructions,
+			instructionInput: []
+		});
 	},
 	nameChange: function (e) {
 		this.setState({
@@ -20938,144 +20977,222 @@ var Form = React.createClass({
 			instructionInput: e.target.value
 		});
 	},
+
+	deleteIngredient: function (e, ingredient) {
+		console.log(ingredient);
+	},
 	onSubmit: function (e) {
 		if (this.state.recipeName) {
-			//if user is in editing mode and leaves either ingredients or instructions unchanged,
-			//this.state.ingredientInput (or instrucionInput) will still be an array.
-			var newIngredients;
-			var newInstructions;
-			if (typeof this.state.ingredientInput == "string") {
-				newIngredients = this.state.ingredientInput.split(',');
-			} else {
-				newIngredients = this.state.ingredientInput;
-			}
-			if (typeof this.state.instructionInput == "string") {
-				newInstructions = this.state.instructionInput.split(',');
-			} else {
-				newInstructions = this.state.instructionInput;
-			}
 			var newKey = Math.floor(Date.now() / 1000);
 			var newRecipe = {
 				key: newKey,
 				name: this.state.recipeName,
-				ingredients: newIngredients,
-				instructions: newInstructions
+				ingredients: this.state.ingredients,
+				instructions: this.state.instructions
 			};
 			if (!this.props.editing) {
 				Actions.postRecipe(newRecipe);
 			} else {
 				Actions.updateRecipe(newRecipe, this.props.oldKey);
 			}
+			this.setState({ ingredients: [], instructions: [] });
 		}
 		this.setState({ recipeName: '', ingredientInput: [], instructionInput: [] });
 	},
+	clearIngredients: function () {
+		this.setState({ ingredients: [] });
+	},
+	clearInstructions: function () {
+		this.setState({ instructions: [] });
+	},
 	render: function () {
-		//editing form
-		if (this.props.editing) {
+		console.log(this.state.ingredients);
+		var ingredientList = this.state.ingredients.map(function (item) {
 			return React.createElement(
+				'li',
+				null,
+				item
+			);
+		});
+		var instructionList = this.state.instructions.map(function (item) {
+			return React.createElement(
+				'li',
+				null,
+				item
+			);
+		});
+		console.log('ingredient list', ingredientList);
+		//editing form
+		var title;
+		var myclass;
+		if (this.props.editing) {
+			title = this.props.name;
+			myclass = "collapse panel-collapse in";
+		} else {
+			title = React.createElement(
 				'div',
-				{ className: 'panel-heading' },
+				{ className: 'add' },
+				'Add a Recipe'
+			);
+			myclass = "collapse panel-collapse";
+		}
+
+		return React.createElement(
+			'div',
+			{ className: 'panel-heading form' },
+			React.createElement(
+				'a',
+				{ 'data-toggle': 'collapse', 'data-parent': '#accordion', href: '#form' },
 				React.createElement(
-					'a',
-					{ 'data-toggle': 'collapse', 'data-parent': '#accordion', href: '#form' },
-					React.createElement(
-						'h4',
-						null,
-						this.props.name
-					)
-				),
+					'h4',
+					null,
+					title
+				)
+			),
+			React.createElement(
+				'div',
+				{ className: myclass, id: 'form' },
 				React.createElement(
 					'div',
-					{ className: 'collapse panel-collapse in', id: 'form' },
+					{ className: 'panel-body' },
 					React.createElement(
 						'div',
-						{ className: 'panel-body' },
+						{ className: 'form-group container' },
 						React.createElement(
-							'div',
-							{ className: 'form-group container' },
+							'form',
+							{ role: 'form' },
+							React.createElement('input', { placeholder: this.props.name, value: this.state.recipeName, onChange: this.nameChange, className: 'form-control' }),
+							React.createElement('br', null),
 							React.createElement(
-								'form',
-								{ role: 'form' },
-								React.createElement('input', { placeholder: this.props.name, value: this.state.recipeName, onChange: this.nameChange, className: 'form-control' }),
-								React.createElement('br', null),
-								React.createElement('input', { className: 'form-control', placeholder: this.props.ingredients.toString(), value: this.state.ingredientInput, onChange: this.changeIngredients }),
-								React.createElement('br', null),
-								React.createElement('input', { className: 'form-control', placeholder: 'instructions (comma separated)', value: this.state.instructionInput, onChange: this.changeInstructions }),
-								React.createElement('br', null),
-								React.createElement(
-									'button',
-									{ className: 'btn btn-default', type: 'button', onClick: this.onSubmit },
-									React.createElement('span', { className: 'glyphicon glyphicon-ok' })
-								)
+								'h5',
+								null,
+								'Ingredients:'
+							),
+							React.createElement(
+								'ul',
+								null,
+								ingredientList
+							),
+							React.createElement(
+								'button',
+								{ className: 'btn btn-default addButton', type: 'button', onClick: this.moreIngredients },
+								React.createElement('span', { className: 'glyphicon glyphicon-plus' })
+							),
+							React.createElement('input', { className: 'form-control ingredientInput', value: this.state.ingredientInput, onChange: this.changeIngredients }),
+							React.createElement(
+								'button',
+								{ className: 'btn btn-default', type: 'button', onClick: this.clearIngredients },
+								'Clear Ingredients'
+							),
+							React.createElement('br', null),
+							React.createElement(
+								'h5',
+								null,
+								'Instructions:'
+							),
+							React.createElement(
+								'ol',
+								null,
+								instructionList
+							),
+							React.createElement(
+								'button',
+								{ className: 'btn btn-default addButton', type: 'button', onClick: this.moreInstructions },
+								React.createElement('span', { className: 'glyphicon glyphicon-plus' })
+							),
+							React.createElement('input', { className: 'form-control instructionInput', value: this.state.instructionInput, onChange: this.changeInstructions }),
+							React.createElement(
+								'button',
+								{ className: 'btn btn-default', type: 'button', onClick: this.clearInstructions },
+								'Clear Instructions'
+							),
+							React.createElement(
+								'button',
+								{ className: 'btn btn-default', type: 'button', onClick: this.onSubmit },
+								React.createElement('span', { className: 'glyphicon glyphicon-ok' })
 							)
 						)
 					)
 				)
-			);
-		}
-		//add recipe form
-		else {
-				return React.createElement(
-					'div',
-					{ className: 'panel-heading' },
-					React.createElement(
-						'a',
-						{ 'data-toggle': 'collapse', 'data-parent': '#accordion', href: '#form' },
-						React.createElement(
-							'h4',
-							null,
-							'Add a recipe'
-						)
-					),
-					React.createElement(
-						'div',
-						{ className: 'collapse panel-collapse', id: 'form' },
-						React.createElement(
-							'div',
-							{ className: 'panel-body' },
-							React.createElement(
-								'div',
-								{ className: 'form-group container' },
-								React.createElement(
-									'form',
-									{ role: 'form' },
-									React.createElement('input', { placeholder: 'recipe name', value: this.state.recipeName, onChange: this.nameChange, className: 'form-control' }),
-									React.createElement('br', null),
-									React.createElement('input', { className: 'form-control', placeholder: 'ingredients (comma separated)', value: this.state.ingredientInput, onChange: this.changeIngredients }),
-									React.createElement('br', null),
-									React.createElement('input', { className: 'form-control', placeholder: 'instructions (comma separated)', value: this.state.instructionInput, onChange: this.changeInstructions }),
-									React.createElement('br', null),
-									React.createElement(
-										'button',
-										{ className: 'btn btn-default', type: 'button', onClick: this.onSubmit },
-										React.createElement('span', { className: 'glyphicon glyphicon-ok' })
-									)
-								)
-							)
-						)
-					)
-				);
-			}
+			)
+		);
+		/*	}
+  //add recipe form
+  else {
+  return(
+  	<div className="panel-heading form">
+  		<a data-toggle="collapse" data-parent="#accordion" href='#form'><h4 className="add">Add a recipe</h4></a>
+  		<div className="collapse panel-collapse" id='form'>
+  			<div className="panel-body">
+  				<div className="form-group container">
+  					<form role="form">
+  			            <input placeholder="recipe name" value={this.state.recipeName} onChange={this.nameChange} className="form-control" />
+        					    <br/>
+        					    <h5>Ingredients:</h5>
+        					    <ul>
+        					    {ingredientList} 
+        					    </ul>
+        					    <input className="form-control ingredientInput" value={this.state.ingredientInput} onChange={this.changeIngredients} />
+        					    <button className="btn btn-default" type="button" onClick={this.moreIngredients}>
+        					    <span className="glyphicon glyphicon-plus"></span></button>
+        					    <button className="btn btn-default" type="button" onClick={this.clearIngredients}>Clear Ingredients</button>        					    
+            					<br/>
+        					    <h5>Instructions:</h5>
+        					    <ol>
+        					    {instructionList} 
+        					    </ol>
+        					    <input className="form-control instructionInput" value={this.state.instructionInput} onChange={this.changeInstructions} />
+        					    <button className="btn btn-default" type="button" onClick={this.moreInstructions}>
+        					    <span className="glyphicon glyphicon-plus"></span></button>
+        					    <button className="btn btn-default" type="button" onClick={this.clearInstructions}>Clear Instructions</button>        					            					    
+            					<br/>            					
+            					<br/>
+            					<button className="btn btn-default" type="button" onClick={this.onSubmit}>
+            					Submit Recipe</button>
+            				</form>
+            			</div>
+            		</div>
+  		</div>
+  	</div>
+  	)
+  }*/
 	}
 });
 
 module.exports = Form;
 
-},{"../reflux/actions.jsx":183,"../reflux/recipe-store.jsx":184,"react":159,"reflux":175}],182:[function(require,module,exports){
+},{"../reflux/actions.jsx":184,"../reflux/recipe-store.jsx":185,"./ingredient-form.jsx":182,"react":159,"reflux":175}],182:[function(require,module,exports){
+var React = require('react');
+var Reflux = require('reflux');
+var Actions = require('../reflux/actions.jsx');
+var RecipeStore = require('../reflux/recipe-store.jsx');
+
+var IngredientForm = React.createClass({
+	displayName: 'IngredientForm',
+
+	render: function () {
+		if (this.props.visibility) {
+			return React.createElement('div', null);
+		}
+	}
+
+});
+
+},{"../reflux/actions.jsx":184,"../reflux/recipe-store.jsx":185,"react":159,"reflux":175}],183:[function(require,module,exports){
 var React = require('react');
 var ReactDOM = require('react-dom');
 var List = require('./components/List.jsx');
 
 ReactDOM.render(React.createElement(List, null), document.getElementById('recipes'));
 
-},{"./components/List.jsx":179,"react":159,"react-dom":30}],183:[function(require,module,exports){
+},{"./components/List.jsx":179,"react":159,"react-dom":30}],184:[function(require,module,exports){
 var Reflux = require('reflux');
 
 var Actions = Reflux.createActions(['getRecipe', 'postRecipe', 'deleteRecipe', 'updateRecipe']);
 
 module.exports = Actions;
 
-},{"reflux":175}],184:[function(require,module,exports){
+},{"reflux":175}],185:[function(require,module,exports){
 var HTTP = require('../services/httpservice.js');
 var Reflux = require('reflux');
 var Actions = require('./actions.jsx');
@@ -21132,7 +21249,7 @@ var RecipeStore = Reflux.createStore({
 
 module.exports = RecipeStore;
 
-},{"../services/httpservice.js":185,"./actions.jsx":183,"reflux":175}],185:[function(require,module,exports){
+},{"../services/httpservice.js":186,"./actions.jsx":184,"reflux":175}],186:[function(require,module,exports){
 var Fetch = require('whatwg-fetch');
 var baseUrl = 'http://localhost:6069';
 
@@ -21170,4 +21287,4 @@ var service = {
 
 module.exports = service;
 
-},{"whatwg-fetch":178}]},{},[182]);
+},{"whatwg-fetch":178}]},{},[183]);

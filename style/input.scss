@@ -1,0 +1,73 @@
+$white: #fff;
+$grey: #dddad6;
+$yellow: #fbf6d0;
+$blue: #8fced6;
+$brown: #ae9c96;
+$title: 'Fredericka the Great', cursive;
+$main-font: 'Gochi Hand', cursive;
+
+@import "texture-mixin";
+
+h1 {
+	font-family: $title;
+	font-size: 40px;
+	color: $brown;
+	padding: 20px;
+	text-align: center;
+	}
+
+h4 {
+	font-family: $title;
+	font-size: 30px;
+}
+h5 {
+	font-size: 25px;
+}
+
+body {
+	background-color: $blue;
+}
+
+.main {
+	@include texture($grey, 9, 0); 
+	margin: 20px;
+	font-family: $main-font;
+	font-size: 20px;
+	color: $brown;
+	border-radius: 10px;
+}
+.buttons {
+	float: right;
+}
+
+
+.panel-group .panel-heading {
+	@include texture($yellow, 44, 0);
+	border-style: solid;
+	border-color: $grey;
+   }
+
+a {
+	color: $brown;
+}
+.add {
+	text-align: right;
+}
+a:visited, a:hover, a:active, a:focus {
+	color: $blue;
+	text-decoration: none;
+}
+
+.btn {
+	background-color: $blue;
+}
+.ingredientInput, .instructionInput{
+	width: 200px;
+}
+form {
+	display:inline-block;
+}
+.addButton {
+	display: block;
+	float: right;
+}

@@ -37,18 +37,21 @@ var Recipe = React.createClass({
 	var linkid="#"+this.props.myKey
 		return(
 			<div>
+			<div className="title">
 			<div className="panel-heading">
 			<a data-toggle="collapse" data-parent="#accordion" href={linkid}><h4>{this.props.name}</h4></a>
 			<div className="collapse panel-collapse" id={this.props.myKey}>
 			<div className="panel-body">
-			<h2>{this.props.name}</h2>
+			<h5>Ingredients:</h5>
 			<ul>{ingredients}</ul>
+			<h5>Instructions:</h5>
 			<ol>{instructions}</ol>
+			<div className="buttons">
             <button className="btn btn-default" onClick={this.onDelete}><span className="glyphicon glyphicon-trash"></span></button>
             <button className="btn btn-default" onClick={this.onEdit}><span className="glyphicon glyphicon-pencil"></span></button>
+            </div>
 
-
-			</div>
+			</div></div>
 			</div>
 			</div></div>
 			)
