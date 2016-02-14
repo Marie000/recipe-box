@@ -27,10 +27,12 @@ h5 {
 body {
 	background-color: $blue;
 }
-
+.submitButton {
+	float: right;
+}
 .main {
 	@include texture($grey, 9, 0); 
-	margin: 20px;
+	margin: 50px;
 	font-family: $main-font;
 	font-size: 20px;
 	color: $brown;
@@ -39,17 +41,42 @@ body {
 .buttons {
 	float: right;
 }
-
-
+.tabs {
+	margin: 0 0 -10px -10px;
+}
+.tabs .btn{
+	background: $brown;
+	font-family: $title;
+	border-radius:15px 15px 0 0;
+	font-size:20px;
+	border: none;
+	color:$white;
+}
+.tabs .btn:hover{
+	background: $blue;
+}
+.tabs .btn:focus{
+	background: $yellow;
+	color: $brown;
+}
+.btn:focus,.btn:active {
+   outline: none !important;
+}
 .panel-group .panel-heading {
 	@include texture($yellow, 44, 0);
-	border-style: solid;
-	border-color: $grey;
+	border: solid $grey 1px;
    }
+.panel-heading {
+	margin: -1px;
+}
+.container {
+	width: 100%;
+}
 
 a {
 	color: $brown;
 }
+
 .add {
 	text-align: right;
 }

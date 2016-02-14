@@ -58,7 +58,8 @@ var Recipe = React.createClass({
 
 }
 else{
-	return <Form name={this.props.name} oldKey={this.props.myKey} ingredients={this.props.ingredients} instructions={this.props.instructions} editing={true}/>
+	return <Form name={this.props.name} oldKey={this.props.myKey} ingredients={this.props.ingredients} 
+	instructions={this.props.instructions} editing={true} categories={this.props.categories}/>
 }}
 
 })

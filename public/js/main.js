@@ -20744,19 +20744,35 @@ var RecipeList = React.createClass({
                 key: "101",
                 name: "Squirmy Pasta",
                 ingredients: ["live worms", "pasta sauce"],
-                instructions: ["heat up pasta sauce", "top live worms with pasta sauce", "enjoy!"]
+                instructions: ["heat up pasta sauce", "top live worms with pasta sauce", "enjoy!"],
+                categories: ['meals']
             }, {
                 key: "102",
                 name: "BBQ squirrel",
                 ingredients: ["1 large squirrel", "BBQ sauce"],
-                instructions: ["catch squirrel", "cover squirrel with BBQ sauce", "cook squirrel on BBQ until crunchy"]
+                instructions: ["catch squirrel", "cover squirrel with BBQ sauce", "cook squirrel on BBQ until crunchy"],
+                categories: ['meals']
             }, {
                 key: "103",
                 name: "Compost Soup",
                 ingredients: ["rotten apple cores", "moldy banana peel", "water", "egg shells, crushed"],
-                instructions: ["mix apple cores, banana peels and water", "bring to a boil", "simmer for 4-5 hours", "served with crushed egg shells"]
+                instructions: ["mix apple cores, banana peels and water", "bring to a boil", "simmer for 4-5 hours", "served with crushed egg shells"],
+                categories: ['soups']
+            }, {
+                key: "104",
+                name: "Poison Ivy Salad",
+                ingredients: ["poison ivy", "your favorite salad dressing"],
+                instructions: ["wear gloves", "mix poison ivy and salad dressing"],
+                categories: ['salads']
+            }, {
+                key: "105",
+                name: "Homegrown Herbal Tea",
+                ingredients: ["grass clippings", "water"],
+                instructions: ["Bring water to a boil", "Let grass clippings steap for 4-5 minutes", "Enjoy!"],
+                categories: ['drinks']
             }],
-            categories: ['meals', 'drinks', 'deserts']
+            categories: ['meals', 'starters', 'soups', 'salads', 'desserts', 'drinks', 'others'],
+            selectedCategory: 'all'
         };
     },
 
@@ -20774,25 +20790,102 @@ var RecipeList = React.createClass({
             recipes: newRecipes
         });
     },
+    selectAll: function () {
+        this.setState({ selectedCategory: 'all' });
+    },
+    selectMeals: function () {
+        this.setState({ selectedCategory: 'meals' });
+    },
+    selectStarters: function () {
+        this.setState({ selectedCategory: 'starters' });
+    },
+    selectSoups: function () {
+        this.setState({ selectedCategory: 'soups' });
+    },
+    selectSalads: function () {
+        this.setState({ selectedCategory: 'salads' });
+    },
+    selectDesserts: function () {
+        this.setState({ selectedCategory: 'desserts' });
+    },
+    selectDrinks: function () {
+        this.setState({ selectedCategory: 'drinks' });
+    },
+    selectOthers: function () {
+        this.setState({ selectedCategory: 'others' });
+    },
 
     render: function () {
+        var selectedCategory = this.state.selectedCategory;
         var RecipeItem = this.state.recipes.map(function (item) {
-            return React.createElement(Recipe, { myKey: item.key, name: item.name, ingredients: item.ingredients, instructions: item.instructions });
+            if (item.categories.indexOf(selectedCategory) > -1 || selectedCategory === 'all') {
+                return React.createElement(Recipe, { myKey: item.key, name: item.name, ingredients: item.ingredients,
+                    instructions: item.instructions, categories: item.categories });
+            }
         });
+
         return React.createElement(
             'div',
-            { className: 'panel-heading' },
+            { className: 'container container-fluid' },
+            React.createElement(
+                'ul',
+                { className: 'tabs' },
+                React.createElement(
+                    'button',
+                    { className: 'btn btn-default', onClick: this.selectAll },
+                    'All'
+                ),
+                React.createElement(
+                    'button',
+                    { className: 'btn btn-default', onClick: this.selectMeals },
+                    'Meals'
+                ),
+                React.createElement(
+                    'button',
+                    { className: 'btn btn-default', onClick: this.selectStarters },
+                    'Starters'
+                ),
+                React.createElement(
+                    'button',
+                    { className: 'btn btn-default', onClick: this.selectSoups },
+                    'Soups'
+                ),
+                React.createElement(
+                    'button',
+                    { className: 'btn btn-default', onClick: this.selectSalads },
+                    'Salads'
+                ),
+                React.createElement(
+                    'button',
+                    { className: 'btn btn-default', onClick: this.selectDesserts },
+                    'Desserts'
+                ),
+                React.createElement(
+                    'button',
+                    { className: 'btn btn-default', onClick: this.selectDrinks },
+                    'Drinks'
+                ),
+                React.createElement(
+                    'button',
+                    { className: 'btn btn-default', onClick: this.selectOthers },
+                    'Others'
+                )
+            ),
             React.createElement(
                 'div',
-                { className: 'container' },
+                { className: 'panel-heading recipesSection' },
                 React.createElement(
                     'div',
-                    { id: 'accordion', className: 'panel-group' },
+                    { className: 'container container-fluid' },
                     React.createElement(
                         'div',
-                        { className: 'panel panel-default' },
-                        RecipeItem,
-                        React.createElement(InputForm, { editing: false })
+                        { id: 'accordion', className: 'panel-group' },
+                        React.createElement(
+                            'div',
+                            { className: 'panel panel-default' },
+                            RecipeItem,
+                            React.createElement(InputForm, { editing: false })
+                        )
                     )
                 )
             )
@@ -20915,7 +21008,8 @@ var Recipe = React.createClass({
 				)
 			);
 		} else {
-			return React.createElement(Form, { name: this.props.name, oldKey: this.props.myKey, ingredients: this.props.ingredients, instructions: this.props.instructions, editing: true });
+			return React.createElement(Form, { name: this.props.name, oldKey: this.props.myKey, ingredients: this.props.ingredients,
+				instructions: this.props.instructions, editing: true, categories: this.props.categories });
 		}
 	}
 
@@ -20938,13 +21032,15 @@ var Form = React.createClass({
 			return {
 				recipeName: this.props.name,
 				ingredients: this.props.ingredients,
-				instructions: this.props.instructions
+				instructions: this.props.instructions,
+				categories: this.props.categories
 			};
 		} else {
 			return {
 				recipeName: "",
 				ingredients: [],
-				instructions: []
+				instructions: [],
+				categories: []
 			};
 		}
 	},
@@ -20988,7 +21084,8 @@ var Form = React.createClass({
 				key: newKey,
 				name: this.state.recipeName,
 				ingredients: this.state.ingredients,
-				instructions: this.state.instructions
+				instructions: this.state.instructions,
+				categories: this.state.categories
 			};
 			if (!this.props.editing) {
 				Actions.postRecipe(newRecipe);
@@ -21004,6 +21101,14 @@ var Form = React.createClass({
 	},
 	clearInstructions: function () {
 		this.setState({ instructions: [] });
+	},
+	setCategories: function (e) {
+		e.preventDefault();
+		console.log('test');
+		var array = [];
+		array.push(e.target.value);
+		this.setState({ categories: array });
+		console.log('categories', this.state.categories);
 	},
 	render: function () {
 		console.log(this.state.ingredients);
@@ -21021,13 +21126,14 @@ var Form = React.createClass({
 				item
 			);
 		});
-		console.log('ingredient list', ingredientList);
+		console.log('categories', this.props.categories);
 		//editing form
 		var title;
 		var myclass;
 		if (this.props.editing) {
 			title = this.props.name;
 			myclass = "collapse panel-collapse in";
+			selected = this.props.categories[0];
 		} else {
 			title = React.createElement(
 				'div',
@@ -21035,6 +21141,7 @@ var Form = React.createClass({
 				'Add a Recipe'
 			);
 			myclass = "collapse panel-collapse";
+			selected = '';
 		}
 
 		return React.createElement(
@@ -21061,6 +21168,11 @@ var Form = React.createClass({
 						React.createElement(
 							'form',
 							{ role: 'form' },
+							React.createElement(
+								'h5',
+								null,
+								'Recipe Name:'
+							),
 							React.createElement('input', { placeholder: this.props.name, value: this.state.recipeName, onChange: this.nameChange, className: 'form-control' }),
 							React.createElement('br', null),
 							React.createElement(
@@ -21074,11 +21186,23 @@ var Form = React.createClass({
 								ingredientList
 							),
 							React.createElement(
-								'button',
-								{ className: 'btn btn-default addButton', type: 'button', onClick: this.moreIngredients },
-								React.createElement('span', { className: 'glyphicon glyphicon-plus' })
+								'div',
+								{ className: 'row' },
+								React.createElement(
+									'div',
+									{ className: 'col-xs-10' },
+									React.createElement('input', { className: 'form-control ingredientInput', value: this.state.ingredientInput, onChange: this.changeIngredients })
+								),
+								React.createElement(
+									'div',
+									{ className: 'col-xs-2' },
+									React.createElement(
+										'button',
+										{ className: 'btn btn-default addButton', type: 'button', onClick: this.moreIngredients },
+										React.createElement('span', { className: 'glyphicon glyphicon-plus' })
+									)
+								)
 							),
-							React.createElement('input', { className: 'form-control ingredientInput', value: this.state.ingredientInput, onChange: this.changeIngredients }),
 							React.createElement(
 								'button',
 								{ className: 'btn btn-default', type: 'button', onClick: this.clearIngredients },
@@ -21096,26 +21220,83 @@ var Form = React.createClass({
 								instructionList
 							),
 							React.createElement(
-								'button',
-								{ className: 'btn btn-default addButton', type: 'button', onClick: this.moreInstructions },
-								React.createElement('span', { className: 'glyphicon glyphicon-plus' })
+								'div',
+								{ className: 'row' },
+								React.createElement(
+									'div',
+									{ className: 'col-xs-10' },
+									React.createElement('input', { className: 'form-control instructionInput', value: this.state.instructionInput, onChange: this.changeInstructions })
+								),
+								React.createElement(
+									'div',
+									{ className: 'col-xs-2' },
+									React.createElement(
+										'button',
+										{ className: 'btn btn-default addButton', type: 'button', onClick: this.moreInstructions },
+										React.createElement('span', { className: 'glyphicon glyphicon-plus' })
+									)
+								)
 							),
-							React.createElement('input', { className: 'form-control instructionInput', value: this.state.instructionInput, onChange: this.changeInstructions }),
 							React.createElement(
 								'button',
 								{ className: 'btn btn-default', type: 'button', onClick: this.clearInstructions },
 								'Clear Instructions'
 							),
+							React.createElement('br', null),
+							React.createElement(
+								'h5',
+								null,
+								'Category:'
+							),
+							React.createElement(
+								'select',
+								{ onChange: this.setCategories, value: this.state.categories,
+									className: 'form-control', selected: selected },
+								React.createElement(
+									'option',
+									{ value: 'meals' },
+									'Meals'
+								),
+								React.createElement(
+									'option',
+									{ value: 'starters' },
+									'Starters'
+								),
+								React.createElement(
+									'option',
+									{ value: 'salads' },
+									'Salads'
+								),
+								React.createElement(
+									'option',
+									{ value: 'desserts' },
+									'Desserts'
+								),
+								React.createElement(
+									'option',
+									{ value: 'drinks' },
+									'Drinks'
+								),
+								React.createElement(
+									'option',
+									{ value: 'others' },
+									'Others'
+								)
+							),
+							React.createElement('br', null),
 							React.createElement(
 								'button',
-								{ className: 'btn btn-default', type: 'button', onClick: this.onSubmit },
-								React.createElement('span', { className: 'glyphicon glyphicon-ok' })
+								{ className: 'btn btn-default submitButton', type: 'button', onClick: this.onSubmit },
+								'Submit Recipe'
 							)
 						)
 					)
 				)
 			)
 		);
+
+		//		   categories:['meals','starters','soups','salads','deserts','drinks','others'],
+
 		/*	}
   //add recipe form
   else {

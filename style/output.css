@@ -15,10 +15,13 @@ h5 {
 body {
   background-color: #8fced6; }
 
+.submitButton {
+  float: right; }
+
 .main {
   background: url("https://raw.github.com/Magnus-G/texture-mixin/gh-pages/textures/skin_side_up.png");
   background-color: #dddad6;
-  margin: 20px;
+  margin: 50px;
   font-family: "Gochi Hand", cursive;
   font-size: 20px;
   color: #ae9c96;
@@ -27,11 +30,37 @@ body {
 .buttons {
   float: right; }
 
+.tabs {
+  margin: 0 0 -10px -10px; }
+
+.tabs .btn {
+  background: #ae9c96;
+  font-family: "Fredericka the Great", cursive;
+  border-radius: 15px 15px 0 0;
+  font-size: 20px;
+  border: none;
+  color: #fff; }
+
+.tabs .btn:hover {
+  background: #8fced6; }
+
+.tabs .btn:focus {
+  background: #fbf6d0;
+  color: #ae9c96; }
+
+.btn:focus, .btn:active {
+  outline: none !important; }
+
 .panel-group .panel-heading {
   background: url("https://raw.github.com/Magnus-G/texture-mixin/gh-pages/textures/line_horizontal1.png");
   background-color: #fbf6d0;
-  border-style: solid;
-  border-color: #dddad6; }
+  border: solid #dddad6 1px; }
+
+.panel-heading {
+  margin: -1px; }
+
+.container {
+  width: 100%; }
 
 a {
   color: #ae9c96; }

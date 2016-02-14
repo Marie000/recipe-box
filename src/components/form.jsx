@@ -10,14 +10,16 @@ var Form = React.createClass({
 			return{
 				recipeName:this.props.name,
 				ingredients:this.props.ingredients,
-				instructions:this.props.instructions
+				instructions:this.props.instructions,
+				categories:this.props.categories
 			};
 		}
 		else{
 			return {
 				recipeName:"",
 				ingredients:[],
-				instructions:[]
+				instructions:[],
+				categories:[]
 		};		}
 		
 	},
@@ -61,7 +63,8 @@ var Form = React.createClass({
 				key:newKey,
 				name:this.state.recipeName,
 				ingredients:this.state.ingredients,
-				instructions:this.state.instructions
+				instructions:this.state.instructions,
+				categories:this.state.categories
 			};
 			if(!this.props.editing){
 				Actions.postRecipe(newRecipe);
@@ -79,6 +82,14 @@ var Form = React.createClass({
 	clearInstructions:function(){
 		this.setState({instructions:[]})
 	},
+	setCategories:function(e){
+		e.preventDefault();
+		console.log('test')
+		var array = [];
+		array.push(e.target.value);
+		this.setState({categories:array});
+		console.log('categories',this.state.categories)
+	},
 	render: function(){
 		console.log(this.state.ingredients)
 		var ingredientList=this.state.ingredients.map(function(item){
@@ -87,17 +98,19 @@ var Form = React.createClass({
 		var instructionList=this.state.instructions.map(function(item){
 			return (<li>{item}< /li>)
 		})		
-		console.log('ingredient list', ingredientList)
+		console.log('categories', this.props.categories)
 		//editing form
 		var title;
 		var myclass; 
 		if(this.props.editing){
 			title=this.props.name;
-			myclass="collapse panel-collapse in"
+			myclass="collapse panel-collapse in";
+			selected=this.props.categories[0];
 			}
 		else{
 			title=<div className="add">Add a Recipe</div>
-			myclass="collapse panel-collapse"
+			myclass="collapse panel-collapse";
+			selected=''
 		}
 
 		return(
@@ -107,32 +120,63 @@ var Form = React.createClass({
 					<div className="panel-body">
 						<div className="form-group container">
 							<form role="form">
+								<h5>Recipe Name:</h5>
 	 							<input placeholder={this.props.name} value={this.state.recipeName} onChange={this.nameChange} className="form-control" />
 								<br/>
 								<h5>Ingredients:</h5>
         					    <ul>
         					    {ingredientList} 
         					    </ul>
-        					    <button className="btn btn-default addButton" type="button" onClick={this.moreIngredients} >
-        					    <span className="glyphicon glyphicon-plus"></span></button>        					    
-        					    <input className="form-control ingredientInput" value={this.state.ingredientInput} onChange={this.changeIngredients} />
+        					    <div className="row">
+        					    	<div className="col-xs-10">
+        					    		<input className="form-control ingredientInput" value={this.state.ingredientInput} onChange={this.changeIngredients} />
+        					    	</div>
+        					    	<div className="col-xs-2">
+        					    		<button className="btn btn-default addButton" type="button" onClick={this.moreIngredients} >
+        					    		<span className="glyphicon glyphicon-plus"></span></button>        					    
+        					    	</div>
+        					    </div>
         					    <button className="btn btn-default" type="button" onClick={this.clearIngredients}>Clear Ingredients</button>
             					<br/>
         					    <h5>Instructions:</h5>
         					    <ol>
         					    {instructionList} 
         					    </ol>
-        					    <button className="btn btn-default addButton" type="button" onClick={this.moreInstructions}>
-        					    <span className="glyphicon glyphicon-plus"></span></button>
-        					    <input className="form-control instructionInput" value={this.state.instructionInput} onChange={this.changeInstructions} />
-        					    <button className="btn btn-default" type="button" onClick={this.clearInstructions}>Clear Instructions</button>        					            					            					    
-            					<button className="btn btn-default" type="button" onClick={this.onSubmit}><span className="glyphicon glyphicon-ok"></span></button>
+        					    <div className="row">
+        					    	<div className="col-xs-10">
+        					    		<input className="form-control instructionInput" value={this.state.instructionInput} onChange={this.changeInstructions} />
+        					    	</div>
+        					    	<div className="col-xs-2">
+        					    		<button className="btn btn-default addButton" type="button" onClick={this.moreInstructions}>
+        					    		<span className="glyphicon glyphicon-plus"></span></button>
+        					    	</div>
+        					    </div>
+        					    <button className="btn btn-default" type="button" onClick={this.clearInstructions}>Clear Instructions</button> 
+ 								<br/>
+ 								<h5>Category:</h5>
+ 								<select onChange={this.setCategories} value ={this.state.categories} 
+ 								className="form-control" selected={selected}>
+		
+						            <option value="meals">Meals</option>
+						            <option value="starters">Starters</option>
+						            <option value="salads">Salads</option>
+						            <option value="desserts">Desserts</option>
+						            <option value="drinks">Drinks</option>
+						            <option value="others">Others</option>
+
+						          </select>
+						          <br/>
+            					<button className="btn btn-default submitButton" type="button" onClick={this.onSubmit}>Submit Recipe</button>
             				</form>
            				</div>
            			</div>
 				</div>
 			</div>
 			)
+
+
+//		   categories:['meals','starters','soups','salads','deserts','drinks','others'],
+
 		/*	}
 		//add recipe form
 		else {
